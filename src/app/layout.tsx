@@ -5,7 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { ObrasProvider } from '@/contexts/ObrasContext';
 
 export const metadata: Metadata = {
-  title: 'NioiAccess',
+  title: 'GRUPO NIOI',
   description: 'Gestión Interna Grupo Nioi',
 };
 

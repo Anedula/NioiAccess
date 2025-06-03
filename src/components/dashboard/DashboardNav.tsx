@@ -38,7 +38,7 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
         <SidebarHeader className="p-4 border-b">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Image src="https://placehold.co/40x40.png?text=GN" alt="Logo" width={32} height={32} className="rounded-sm" data-ai-hint="company logo"/>
-            <h1 className="text-lg font-semibold font-headline text-sidebar-foreground group-data-[collapsible=icon]:hidden">NioiAccess</h1>
+            <h1 className="text-lg font-semibold font-headline text-sidebar-foreground group-data-[collapsible=icon]:hidden">GRUPO NIOI</h1>
           </Link>
         </SidebarHeader>
         <SidebarContent className="p-2">
