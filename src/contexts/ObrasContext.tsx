@@ -7,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 interface ObrasContextType {
   obras: Obra[];
   addObra: (obraData: Omit<Obra, 'id' | 'createdAt' | 'createdBy'>, creatorRole: Role) => void;
+  updateObra: (id: string, obraData: Omit<Obra, 'id' | 'createdAt' | 'createdBy'>) => void;
   getObraById: (id: string) => Obra | undefined;
   isLoading: boolean;
 }
@@ -60,11 +61,26 @@ export const ObrasProvider = ({ children }: { children: ReactNode }) => {
     };
     const updatedObras = [...obras, newObra];
     saveObras(updatedObras);
-    toast({
-      title: "Éxito",
-      description: "Nueva obra cargada correctamente.",
-    });
+    // Toast is handled in the form submission
   };
+
+  const updateObra = (id: string, obraData: Omit<Obra, 'id' | 'createdAt' | 'createdBy'>) => {
+    const obraIndex = obras.findIndex(o => o.id === id);
+    if (obraIndex === -1) {
+      toast({ title: "Error", description: "Obra no encontrada para actualizar.", variant: "destructive" });
+      return;
+    }
+    const existingObra = obras[obraIndex];
+    const updatedObra: Obra = {
+      ...existingObra, // Preserve id, createdAt, createdBy
+      ...obraData, // Apply new data
+    };
+    const updatedObras = [...obras];
+    updatedObras[obraIndex] = updatedObra;
+    saveObras(updatedObras);
+    // Toast is handled in the form submission
+  };
+
 
   const getObraById = (id: string): Obra | undefined => {
     return obras.find(obra => obra.id === id);
@@ -72,7 +88,7 @@ export const ObrasProvider = ({ children }: { children: ReactNode }) => {
   
 
   return (
-    <ObrasContext.Provider value={{ obras, addObra, getObraById, isLoading }}>
+    <ObrasContext.Provider value={{ obras, addObra, updateObra, getObraById, isLoading }}>
       {children}
     </ObrasContext.Provider>
   );

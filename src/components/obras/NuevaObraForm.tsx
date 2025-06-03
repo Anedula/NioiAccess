@@ -1,6 +1,7 @@
 
 "use client";
 
+import React, { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -18,8 +19,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import type { Obra, EstadoObra, UnidadValidez } from '@/lib/types';
 import { ESTADOS_OBRA, UNIDADES_VALIDEZ } from '@/lib/types';
 import { cn } from "@/lib/utils";
-import { CalendarIcon, UploadCloud } from "lucide-react";
-import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+import { format, parseISO } from "date-fns";
 import { es } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -46,7 +47,7 @@ const obraSchema = z.object({
   estado_obra: z.custom<EstadoObra>((val) => ESTADOS_OBRA.includes(val as EstadoObra), "Estado de obra no válido."),
   empresa_adjudicada: z.string().optional(),
   observaciones: z.string().optional(),
-  anio_licitacion: z.coerce.number().int().min(2023, "El año debe ser 2023 o posterior.").max(currentYear + 5, `El año no puede ser mayor a ${currentYear + 5}`),
+  anio_licitacion: z.coerce.number().int().min(2000, "El año debe ser 2000 o posterior.").max(currentYear + 10, `El año no puede ser mayor a ${currentYear + 10}`),
   fecha_inicio_obra: z.date().optional(),
   fecha_finalizacion_obra: z.date().optional(),
   archivo_oferta_pdf: z.any().optional(), 
@@ -71,10 +72,14 @@ const obraSchema = z.object({
   }
 });
 
-type ObraFormValues = z.infer<typeof obraSchema>;
+export type ObraFormValues = z.infer<typeof obraSchema>;
 
-export default function NuevaObraForm() {
-  const { addObra } = useObras();
+interface NuevaObraFormProps {
+  obraToEdit?: Obra; // Obra a editar, si existe
+}
+
+export default function NuevaObraForm({ obraToEdit }: NuevaObraFormProps) {
+  const { addObra, updateObra } = useObras();
   const { userRole } = useAuth();
   const router = useRouter();
   const { toast } = useToast();
@@ -87,8 +92,27 @@ export default function NuevaObraForm() {
       moneda: "ARS",
       anio_licitacion: new Date().getFullYear(),
       unidad_validez: "días",
+      // Otros campos se llenarán desde obraToEdit si está presente
     },
   });
+
+  useEffect(() => {
+    if (obraToEdit) {
+      form.reset({
+        ...obraToEdit,
+        // Convertir strings de fecha a objetos Date para los campos del calendario
+        fecha_invitacion: obraToEdit.fecha_invitacion ? parseISO(obraToEdit.fecha_invitacion) : undefined,
+        fecha_presentacion: obraToEdit.fecha_presentacion ? parseISO(obraToEdit.fecha_presentacion) : undefined,
+        fecha_inicio_obra: obraToEdit.fecha_inicio_obra ? parseISO(obraToEdit.fecha_inicio_obra) : undefined,
+        fecha_finalizacion_obra: obraToEdit.fecha_finalizacion_obra ? parseISO(obraToEdit.fecha_finalizacion_obra) : undefined,
+        fecha_recepcion_provisoria: obraToEdit.fecha_recepcion_provisoria ? parseISO(obraToEdit.fecha_recepcion_provisoria) : undefined,
+        fecha_recepcion_definitiva: obraToEdit.fecha_recepcion_definitiva ? parseISO(obraToEdit.fecha_recepcion_definitiva) : undefined,
+        // Los campos de archivo se dejan para que el usuario los vuelva a cargar si es necesario
+        archivo_oferta_pdf: undefined, 
+        archivo_descripcion_pdf: undefined,
+      });
+    }
+  }, [obraToEdit, form]);
 
   const { watch } = form;
   const esUte = watch("es_ute");
@@ -106,22 +130,32 @@ export default function NuevaObraForm() {
       fecha_presentacion: data.fecha_presentacion.toISOString(),
       fecha_inicio_obra: data.fecha_inicio_obra?.toISOString(),
       fecha_finalizacion_obra: data.fecha_finalizacion_obra?.toISOString(),
-      archivo_oferta_pdf: data.archivo_oferta_pdf?.[0]?.name, 
-      archivo_descripcion_pdf: data.archivo_descripcion_pdf?.[0]?.name, 
+      // Conservar nombres de archivo existentes si no se carga uno nuevo en modo edición
+      archivo_oferta_pdf: data.archivo_oferta_pdf?.[0]?.name || (obraToEdit ? obraToEdit.archivo_oferta_pdf : undefined),
+      archivo_descripcion_pdf: data.archivo_descripcion_pdf?.[0]?.name || (obraToEdit ? obraToEdit.archivo_descripcion_pdf : undefined),
       fecha_recepcion_provisoria: data.fecha_recepcion_provisoria?.toISOString(),
       fecha_recepcion_definitiva: data.fecha_recepcion_definitiva?.toISOString(),
     };
 
-    addObra(obraPayload, userRole);
-    toast({ title: "Obra Cargada", description: `${data.nombre_obra} ha sido cargada exitosamente.`});
+    if (obraToEdit) {
+      updateObra(obraToEdit.id, obraPayload);
+      toast({ title: "Obra Actualizada", description: `${data.nombre_obra} ha sido actualizada exitosamente.`});
+    } else {
+      addObra(obraPayload, userRole);
+      toast({ title: "Obra Cargada", description: `${data.nombre_obra} ha sido cargada exitosamente.`});
+    }
     router.push('/dashboard/obras');
   };
 
   return (
     <Card className="w-full max-w-4xl mx-auto shadow-xl">
       <CardHeader>
-        <CardTitle className="text-2xl font-headline text-primary">Cargar Nueva Obra</CardTitle>
-        <CardDescription>Complete los campos para registrar una nueva obra. Solo visible para Oficina Técnica.</CardDescription>
+        <CardTitle className="text-2xl font-headline text-primary">
+          {obraToEdit ? "Editar Obra" : "Cargar Nueva Obra"}
+        </CardTitle>
+        <CardDescription>
+          {obraToEdit ? "Modifique los datos de la obra." : "Complete los campos para registrar una nueva obra. Solo visible para Oficina Técnica."}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -151,7 +185,7 @@ export default function NuevaObraForm() {
                   <FormField control={form.control} name="precio_dolar" render={({ field }) => ( <FormItem> <FormLabel>Precio Dólar (Opcional)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="porcentaje_anticipo" render={({ field }) => ( <FormItem> <FormLabel>% Anticipo (Opcional)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                   <FormField control={form.control} name="plazo_validez" render={({ field }) => ( <FormItem> <FormLabel>Plazo Validez Oferta</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                  <FormField control={form.control} name="unidad_validez" render={({ field }) => ( <FormItem> <FormLabel>Unidad Plazo</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar unidad" /></SelectTrigger></FormControl><SelectContent>{UNIDADES_VALIDEZ.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                  <FormField control={form.control} name="unidad_validez" render={({ field }) => ( <FormItem> <FormLabel>Unidad Plazo</FormLabel> <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar unidad" /></SelectTrigger></FormControl><SelectContent>{UNIDADES_VALIDEZ.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
               </div>
               <div className="mt-6">
                 <FormField control={form.control} name="formula_polinomica" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 h-14 max-w-xs"> <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl> <FormLabel className="font-normal">Fórmula Polinómica?</FormLabel> </FormItem> )} />
@@ -166,7 +200,7 @@ export default function NuevaObraForm() {
               </div>
               
               <div className="mt-6">
-                <FormField control={form.control} name="estado_obra" render={({ field }) => ( <FormItem> <FormLabel>Estado de la Obra</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar estado" /></SelectTrigger></FormControl><SelectContent>{ESTADOS_OBRA.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="estado_obra" render={({ field }) => ( <FormItem> <FormLabel>Estado de la Obra</FormLabel> <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar estado" /></SelectTrigger></FormControl><SelectContent>{ESTADOS_OBRA.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
               </div>
               {estadoObra === "Adjudicada a otra Empresa" && <div className="mt-6"><FormField control={form.control} name="empresa_adjudicada" render={({ field }) => ( <FormItem> <FormLabel>Empresa Adjudicada</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} /></div>}
               
@@ -194,13 +228,13 @@ export default function NuevaObraForm() {
             <div>
               <h3 className="text-lg font-medium text-primary mb-4 mt-6">Archivos Adjuntos</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField control={form.control} name="archivo_oferta_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Oferta PDF</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar oferta en formato PDF.</FormDescription><FormMessage /> </FormItem> )} />
-                  <FormField control={form.control} name="archivo_descripcion_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Descripción PDF</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar descripción en formato PDF.</FormDescription><FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="archivo_oferta_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Oferta PDF {obraToEdit?.archivo_oferta_pdf && `(Actual: ${obraToEdit.archivo_oferta_pdf})`}</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar oferta en formato PDF. Si no selecciona un nuevo archivo, se mantendrá el actual (si existe).</FormDescription><FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="archivo_descripcion_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Descripción PDF {obraToEdit?.archivo_descripcion_pdf && `(Actual: ${obraToEdit.archivo_descripcion_pdf})`}</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar descripción en formato PDF. Si no selecciona un nuevo archivo, se mantendrá el actual (si existe).</FormDescription><FormMessage /> </FormItem> )} />
               </div>
             </div>
 
             <Button type="submit" className="w-full md:w-auto" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? "Guardando..." : "Guardar Obra"}
+              {form.formState.isSubmitting ? (obraToEdit ? "Actualizando..." : "Guardando...") : (obraToEdit ? "Actualizar Obra" : "Guardar Obra")}
             </Button>
           </form>
         </Form>

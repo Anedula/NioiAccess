@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -34,7 +35,7 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
 
   return (
     <SidebarProvider defaultOpen>
-      <Sidebar className="border-r">
+      <Sidebar className="border-r no-print">
         <SidebarHeader className="p-4 border-b">
           <Link href="/dashboard" className="flex items-center gap-2">
             <Image src="https://placehold.co/40x40.png?text=GN" alt="Logo" width={32} height={32} className="rounded-sm" data-ai-hint="company logo"/>
@@ -73,7 +74,7 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
         </SidebarFooter>
       </Sidebar>
       <SidebarInset className="flex flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between h-14 px-4 border-b bg-background sm:justify-end">
+        <header className="sticky top-0 z-10 flex items-center justify-between h-14 px-4 border-b bg-background sm:justify-end no-print">
           <SidebarTrigger className="sm:hidden" />
           {/* Future header content like notifications or user profile can go here */}
           <div className="flex items-center gap-2">

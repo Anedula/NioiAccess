@@ -90,3 +90,38 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .printable-area, .printable-area * {
+    visibility: visible;
+  }
+  .printable-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .no-print {
+    display: none !important;
+  }
+  /* Ensure table borders are visible for printing */
+  .printable-area table, 
+  .printable-area th, 
+  .printable-area td {
+    border: 1px solid black !important;
+  }
+  .printable-area th, 
+  .printable-area td {
+    padding: 4px !important; /* Adjust padding for print */
+  }
+  .printable-area caption {
+    display: table-caption; /* Ensure caption is visible */
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+}
