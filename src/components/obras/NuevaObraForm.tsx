@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useForm, Controller } from 'react-hook-form';
@@ -48,8 +49,8 @@ const obraSchema = z.object({
   anio_licitacion: z.coerce.number().int().min(2023, "El año debe ser 2023 o posterior.").max(currentYear + 5, `El año no puede ser mayor a ${currentYear + 5}`),
   fecha_inicio_obra: z.date().optional(),
   fecha_finalizacion_obra: z.date().optional(),
-  archivo_oferta_pdf: z.any().optional(), // Simplified for now
-  archivo_descripcion_pdf: z.any().optional(), // Simplified for now
+  archivo_oferta_pdf: z.any().optional(), 
+  archivo_descripcion_pdf: z.any().optional(), 
   fecha_recepcion_provisoria: z.date().optional(),
   fecha_recepcion_definitiva: z.date().optional(),
 }).superRefine((data, ctx) => {
@@ -86,7 +87,6 @@ export default function NuevaObraForm() {
       moneda: "ARS",
       anio_licitacion: new Date().getFullYear(),
       unidad_validez: "días",
-      // Set other defaults if necessary
     },
   });
 
@@ -106,8 +106,8 @@ export default function NuevaObraForm() {
       fecha_presentacion: data.fecha_presentacion.toISOString(),
       fecha_inicio_obra: data.fecha_inicio_obra?.toISOString(),
       fecha_finalizacion_obra: data.fecha_finalizacion_obra?.toISOString(),
-      archivo_oferta_pdf: data.archivo_oferta_pdf?.[0]?.name, // Store filename
-      archivo_descripcion_pdf: data.archivo_descripcion_pdf?.[0]?.name, // Store filename
+      archivo_oferta_pdf: data.archivo_oferta_pdf?.[0]?.name, 
+      archivo_descripcion_pdf: data.archivo_descripcion_pdf?.[0]?.name, 
       fecha_recepcion_provisoria: data.fecha_recepcion_provisoria?.toISOString(),
       fecha_recepcion_definitiva: data.fecha_recepcion_definitiva?.toISOString(),
     };
@@ -126,59 +126,73 @@ export default function NuevaObraForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField control={form.control} name="nombre_obra" render={({ field }) => ( <FormItem> <FormLabel>Nombre de la Obra</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-              <FormField control={form.control} name="ubicacion" render={({ field }) => ( <FormItem> <FormLabel>Ubicación</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-              <FormField control={form.control} name="comitente" render={({ field }) => ( <FormItem> <FormLabel>Comitente</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-              <FormField control={form.control} name="anio_licitacion" render={({ field }) => ( <FormItem> <FormLabel>Año de Licitación</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                <FormField control={form.control} name="es_ute" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4"> <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl> <FormLabel className="font-normal">Es UTE?</FormLabel> </FormItem> )} />
-                {esUte && <FormField control={form.control} name="empresa_ute" render={({ field }) => ( <FormItem> <FormLabel>Empresa UTE</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />}
-            </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="fecha_invitacion" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Invitación</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1900-01-01")} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                <FormField control={form.control} name="fecha_presentacion" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Presentación</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField control={form.control} name="monto_oferta" render={({ field }) => ( <FormItem> <FormLabel>Monto Oferta</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                <FormField control={form.control} name="moneda" render={({ field }) => ( <FormItem> <FormLabel>Moneda</FormLabel> <FormControl><Input {...field} placeholder="ARS, USD..." /></FormControl> <FormMessage /> </FormItem> )} />
-                <FormField control={form.control} name="precio_dolar" render={({ field }) => ( <FormItem> <FormLabel>Precio Dólar (Opcional)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <FormField control={form.control} name="porcentaje_anticipo" render={({ field }) => ( <FormItem> <FormLabel>% Anticipo (Opcional)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                <FormField control={form.control} name="plazo_validez" render={({ field }) => ( <FormItem> <FormLabel>Plazo Validez Oferta</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-                <FormField control={form.control} name="unidad_validez" render={({ field }) => ( <FormItem> <FormLabel>Unidad Plazo</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar unidad" /></SelectTrigger></FormControl><SelectContent>{UNIDADES_VALIDEZ.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-            </div>
-
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-                <FormField control={form.control} name="formula_polinomica" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 h-14"> <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl> <FormLabel className="font-normal">Fórmula Polinómica?</FormLabel> </FormItem> )} />
+            <div>
+              <h3 className="text-lg font-medium text-primary mb-4">Datos de la Obra</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField control={form.control} name="nombre_obra" render={({ field }) => ( <FormItem> <FormLabel>Nombre de la Obra</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <FormField control={form.control} name="ubicacion" render={({ field }) => ( <FormItem> <FormLabel>Ubicación</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <FormField control={form.control} name="comitente" render={({ field }) => ( <FormItem> <FormLabel>Comitente</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                <FormField control={form.control} name="anio_licitacion" render={({ field }) => ( <FormItem> <FormLabel>Año de Licitación</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                 <FormField control={form.control} name="duracion_obra" render={({ field }) => ( <FormItem> <FormLabel>Duración Obra</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
                 <FormField control={form.control} name="unidad_duracion" render={({ field }) => ( <FormItem> <FormLabel>Unidad Duración</FormLabel> <FormControl><Input {...field} placeholder="ej: meses" /></FormControl> <FormMessage /> </FormItem> )} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 items-center">
+                <FormField control={form.control} name="es_ute" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 h-14"> <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl> <FormLabel className="font-normal">Es UTE?</FormLabel> </FormItem> )} />
+                {esUte && <FormField control={form.control} name="empresa_ute" render={({ field }) => ( <FormItem> <FormLabel>Empresa UTE</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-lg font-medium text-primary mb-4 mt-6">Datos Económicos</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <FormField control={form.control} name="monto_oferta" render={({ field }) => ( <FormItem> <FormLabel>Monto Oferta</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="moneda" render={({ field }) => ( <FormItem> <FormLabel>Moneda</FormLabel> <FormControl><Input {...field} placeholder="ARS, USD..." /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="precio_dolar" render={({ field }) => ( <FormItem> <FormLabel>Precio Dólar (Opcional)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="porcentaje_anticipo" render={({ field }) => ( <FormItem> <FormLabel>% Anticipo (Opcional)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="plazo_validez" render={({ field }) => ( <FormItem> <FormLabel>Plazo Validez Oferta</FormLabel> <FormControl><Input type="number" {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="unidad_validez" render={({ field }) => ( <FormItem> <FormLabel>Unidad Plazo</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar unidad" /></SelectTrigger></FormControl><SelectContent>{UNIDADES_VALIDEZ.map(u => <SelectItem key={u} value={u}>{u}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+              </div>
+              <div className="mt-6">
+                <FormField control={form.control} name="formula_polinomica" render={({ field }) => ( <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 h-14 max-w-xs"> <FormControl><Checkbox checked={field.value} onCheckedChange={field.onChange} /></FormControl> <FormLabel className="font-normal">Fórmula Polinómica?</FormLabel> </FormItem> )} />
+              </div>
             </div>
             
-            <FormField control={form.control} name="estado_obra" render={({ field }) => ( <FormItem> <FormLabel>Estado de la Obra</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar estado" /></SelectTrigger></FormControl><SelectContent>{ESTADOS_OBRA.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
-            {estadoObra === "Adjudicada a otra Empresa" && <FormField control={form.control} name="empresa_adjudicada" render={({ field }) => ( <FormItem> <FormLabel>Empresa Adjudicada</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />}
-            {estadoObra === "En Ejecución" && <FormField control={form.control} name="fecha_inicio_obra" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Inicio Obra</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />}
-             <FormField control={form.control} name="fecha_finalizacion_obra" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Finalización Obra (Estimada/Real)</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+            <div>
+              <h3 className="text-lg font-medium text-primary mb-4 mt-6">Estado, Fechas y Observaciones</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <FormField control={form.control} name="fecha_invitacion" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Invitación</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} disabled={(date) => date > new Date() || date < new Date("1900-01-01")} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                <FormField control={form.control} name="fecha_presentacion" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Presentación</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+              </div>
+              
+              <div className="mt-6">
+                <FormField control={form.control} name="estado_obra" render={({ field }) => ( <FormItem> <FormLabel>Estado de la Obra</FormLabel> <Select onValueChange={field.onChange} defaultValue={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar estado" /></SelectTrigger></FormControl><SelectContent>{ESTADOS_OBRA.map(e => <SelectItem key={e} value={e}>{e}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />
+              </div>
+              {estadoObra === "Adjudicada a otra Empresa" && <div className="mt-6"><FormField control={form.control} name="empresa_adjudicada" render={({ field }) => ( <FormItem> <FormLabel>Empresa Adjudicada</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} /></div>}
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                {estadoObra === "En Ejecución" && <FormField control={form.control} name="fecha_inicio_obra" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Inicio Obra</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />}
+                <FormField control={form.control} name="fecha_finalizacion_obra" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Finalización Obra (Estimada/Real)</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+              </div>
 
+              {estadoObra === "Finalizada" && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                      <FormField control={form.control} name="fecha_recepcion_provisoria" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Recepción Provisoria</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                      <FormField control={form.control} name="fecha_recepcion_definitiva" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Recepción Definitiva</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
+                  </div>
+              )}
+              
+              <div className="mt-6">
+                <FormField control={form.control} name="observaciones" render={({ field }) => ( <FormItem> <FormLabel>Observaciones</FormLabel> <FormControl><Textarea rows={4} {...field} /></FormControl> <FormMessage /> </FormItem> )} />
+              </div>
+            </div>
 
-            {estadoObra === "Finalizada" && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField control={form.control} name="fecha_recepcion_provisoria" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Recepción Provisoria</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                    <FormField control={form.control} name="fecha_recepcion_definitiva" render={({ field }) => (<FormItem className="flex flex-col"> <FormLabel>Fecha Recepción Definitiva</FormLabel> <Popover><PopoverTrigger asChild><FormControl><Button variant={"outline"} className={cn("w-full pl-3 text-left font-normal",!field.value && "text-muted-foreground")}>{field.value ? (format(field.value, "PPP", { locale: es })) : (<span>Seleccionar fecha</span>)}<CalendarIcon className="ml-auto h-4 w-4 opacity-50" /></Button></FormControl></PopoverTrigger><PopoverContent className="w-auto p-0" align="start"><Calendar mode="single" selected={field.value} onSelect={field.onChange} initialFocus /></PopoverContent></Popover><FormMessage /></FormItem>)} />
-                </div>
-            )}
-            
-            <FormField control={form.control} name="observaciones" render={({ field }) => ( <FormItem> <FormLabel>Observaciones</FormLabel> <FormControl><Textarea rows={4} {...field} /></FormControl> <FormMessage /> </FormItem> )} />
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <FormField control={form.control} name="archivo_oferta_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Oferta PDF</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar oferta en formato PDF.</FormDescription><FormMessage /> </FormItem> )} />
-                <FormField control={form.control} name="archivo_descripcion_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Descripción PDF</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar descripción en formato PDF.</FormDescription><FormMessage /> </FormItem> )} />
+            <div>
+              <h3 className="text-lg font-medium text-primary mb-4 mt-6">Archivos Adjuntos</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <FormField control={form.control} name="archivo_oferta_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Oferta PDF</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar oferta en formato PDF.</FormDescription><FormMessage /> </FormItem> )} />
+                  <FormField control={form.control} name="archivo_descripcion_pdf" render={({ field: { onChange, value, ...rest } }) => ( <FormItem> <FormLabel>Archivo Descripción PDF</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} /></FormControl> <FormDescription>Cargar descripción en formato PDF.</FormDescription><FormMessage /> </FormItem> )} />
+              </div>
             </div>
 
             <Button type="submit" className="w-full md:w-auto" disabled={form.formState.isSubmitting}>
