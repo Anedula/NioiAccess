@@ -3,6 +3,8 @@ import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 import { ObrasProvider } from '@/contexts/ObrasContext';
+import { PersonalProvider } from '@/contexts/PersonalContext'; // Nueva importación
+import { AsistenciaProvider } from '@/contexts/AsistenciaContext'; // Nueva importación
 
 export const metadata: Metadata = {
   title: 'GRUPO NIOI',
@@ -24,8 +26,12 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <AuthProvider>
           <ObrasProvider>
-            {children}
-            <Toaster />
+            <PersonalProvider> {/* Envolver con PersonalProvider */}
+              <AsistenciaProvider> {/* Envolver con AsistenciaProvider */}
+                {children}
+                <Toaster />
+              </AsistenciaProvider>
+            </PersonalProvider>
           </ObrasProvider>
         </AuthProvider>
       </body>

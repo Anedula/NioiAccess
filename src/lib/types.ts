@@ -66,3 +66,36 @@ export type EstadoObra = typeof ESTADOS_OBRA[number];
 
 export const UNIDADES_VALIDEZ = ["días", "meses", "años"] as const;
 export type UnidadValidez = typeof UNIDADES_VALIDEZ[number];
+
+// Tipos para Recursos Humanos - Nómina
+export type UbicacionPersonal = "Obra" | "Oficina";
+
+export interface Personal {
+  id: string;
+  nombreCompleto: string;
+  dni: string;
+  fechaNacimiento: string; // Store as ISO string
+  ubicacion: UbicacionPersonal;
+  obraAsignada?: string; // Requerido si ubicacion es "Obra"
+  areaOficina?: Role; // Requerido si ubicacion es "Oficina"
+  estadoCivil: string;
+  tieneHijos: boolean;
+  obraSocial: string;
+  datosMedicosAdicionales?: string;
+  archivoExamenPreocupacional?: string; // filename
+  createdBy?: Role;
+  createdAt?: string; // ISO string
+}
+
+// Tipos para Recursos Humanos - Asistencia
+export const ESTADOS_ASISTENCIA = ["Jornada completa", "Media jornada", "Ausente"] as const;
+export type EstadoAsistencia = typeof ESTADOS_ASISTENCIA[number];
+
+export interface RegistroAsistencia {
+    id: string;
+    personalId: string; // ID del empleado de la nómina
+    fecha: string; // YYYY-MM-DD
+    estado: EstadoAsistencia;
+    registradoPor?: Role;
+    registradoAt?: string; // ISO string
+}
