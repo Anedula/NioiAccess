@@ -1,7 +1,8 @@
+
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import type { Obra, Role } from '@/lib/types';
+import type { Obra } from '@/lib/types';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableCaption } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Download, Eye } from 'lucide-react';
@@ -22,7 +23,7 @@ const formatDateSafe = (dateString?: string) => {
 };
 
 export default function ObrasTable() {
-  const { userRole } = useAuth();
+  const { userRole } = useAuth(); // userRole será null si no está autenticado
   const { obras, isLoading } = useObras();
   const [filters, setFilters] = useState<Filters>({
     anio_licitacion: '',
@@ -34,7 +35,7 @@ export default function ObrasTable() {
   const filteredObras = useMemo(() => {
     return obras.filter(obra => {
       const matchAnio = filters.anio_licitacion ? obra.anio_licitacion === parseInt(filters.anio_licitacion) : true;
-      const matchComitente = filters.comitente ? obra.comitente.toLowerCase().includes(filters.comitente.toLowerCase()) : true;
+      const matchComitente = filters.comitente ? obra.comitente === filters.comitente : true; // Comparación exacta
       const matchUte = filters.es_ute === 'todos' ? true : (filters.es_ute === 'si' ? obra.es_ute : !obra.es_ute);
       const matchEstado = filters.estado_obra === 'todos' ? true : obra.estado_obra === filters.estado_obra;
       return matchAnio && matchComitente && matchUte && matchEstado;
@@ -47,6 +48,8 @@ export default function ObrasTable() {
   if (isLoading) {
     return <p>Cargando listado de obras...</p>;
   }
+
+  const showActionsColumn = !!userRole; // Mostrar columna de acciones si el usuario está autenticado
 
   return (
     <div className="space-y-6">
@@ -70,7 +73,7 @@ export default function ObrasTable() {
               <TableHead>Estado</TableHead>
               <TableHead className="text-center">Es UTE?</TableHead>
               <TableHead>Fecha Presentación</TableHead>
-              {userRole === 'Finanzas' && <TableHead className="text-center">Acciones</TableHead>}
+              {showActionsColumn && <TableHead className="text-center">Acciones</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -90,7 +93,7 @@ export default function ObrasTable() {
                   </TableCell>
                   <TableCell className="text-center">{obra.es_ute ? 'Sí' : 'No'}</TableCell>
                   <TableCell>{formatDateSafe(obra.fecha_presentacion)}</TableCell>
-                  {userRole === 'Finanzas' && (
+                  {showActionsColumn && (
                     <TableCell className="text-center space-x-2">
                       {obra.archivo_oferta_pdf && (
                         <Button variant="outline" size="sm" onClick={() => alert(`Descargando ${obra.archivo_oferta_pdf}`)}>
@@ -111,7 +114,7 @@ export default function ObrasTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={userRole === 'Finanzas' ? 8 : 7} className="text-center h-24">
+                <TableCell colSpan={showActionsColumn ? 8 : 7} className="text-center h-24">
                   No se encontraron obras.
                 </TableCell>
               </TableRow>
