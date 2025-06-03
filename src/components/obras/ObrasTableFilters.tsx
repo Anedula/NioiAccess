@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -21,6 +22,10 @@ interface ObrasTableFiltersProps {
   uniqueAnios: number[];
 }
 
+// Define unique non-empty values for "All" options
+const ALL_YEARS_VALUE = "__ALL_YEARS__";
+const ALL_COMITENTES_VALUE = "__ALL_COMITENTES__";
+
 export const ObrasTableFilters: React.FC<ObrasTableFiltersProps> = ({
   filters,
   onFilterChange,
@@ -34,7 +39,13 @@ export const ObrasTableFilters: React.FC<ObrasTableFiltersProps> = ({
   };
 
   const handleSelectChange = (name: keyof Filters, value: string) => {
-    onFilterChange({ ...filters, [name]: value });
+    let actualValue = value;
+    if (name === 'anio_licitacion' && value === ALL_YEARS_VALUE) {
+      actualValue = ''; // Convert special value to empty string for filter state
+    } else if (name === 'comitente' && value === ALL_COMITENTES_VALUE) {
+      actualValue = ''; // Convert special value to empty string for filter state
+    }
+    onFilterChange({ ...filters, [name]: actualValue });
   };
 
   const clearFilters = () => {
@@ -49,14 +60,14 @@ export const ObrasTableFilters: React.FC<ObrasTableFiltersProps> = ({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6 p-4 border rounded-lg shadow-sm bg-card">
       <Select
-        value={filters.anio_licitacion}
+        value={filters.anio_licitacion} // Remains empty string when "all" is selected conceptually
         onValueChange={(value) => handleSelectChange('anio_licitacion', value)}
       >
         <SelectTrigger>
           <SelectValue placeholder="Año Licitación" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Todos los Años</SelectItem>
+          <SelectItem value={ALL_YEARS_VALUE}>Todos los Años</SelectItem>
           {uniqueAnios.sort((a,b) => b-a).map(anio => (
             <SelectItem key={anio} value={String(anio)}>{anio}</SelectItem>
           ))}
@@ -64,14 +75,14 @@ export const ObrasTableFilters: React.FC<ObrasTableFiltersProps> = ({
       </Select>
 
       <Select
-        value={filters.comitente}
+        value={filters.comitente} // Remains empty string when "all" is selected conceptually
         onValueChange={(value) => handleSelectChange('comitente', value)}
       >
         <SelectTrigger>
           <SelectValue placeholder="Comitente" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="">Todos los Comitentes</SelectItem>
+          <SelectItem value={ALL_COMITENTES_VALUE}>Todos los Comitentes</SelectItem>
           {uniqueComitentes.map(comitente => (
             <SelectItem key={comitente} value={comitente}>{comitente}</SelectItem>
           ))}
