@@ -15,7 +15,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
+  // AlertDialogTrigger, // No longer needed here
 } from "@/components/ui/alert-dialog";
 import { useAuth } from '@/contexts/AuthContext';
 import { usePersonal } from '@/contexts/PersonalContext';
@@ -140,11 +140,10 @@ export default function NominaTable() {
                           <Pencil className="h-4 w-4" />
                         </Button>
                       </Link>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" title="Eliminar Personal" onClick={() => handleDeleteClick(personal.id)}>
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </AlertDialogTrigger>
+                      {/* Removed AlertDialogTrigger wrapper, Button's onClick now handles opening the dialog */}
+                      <Button variant="ghost" size="icon" title="Eliminar Personal" onClick={() => handleDeleteClick(personal.id)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </TableCell>
                   )}
                 </TableRow>
