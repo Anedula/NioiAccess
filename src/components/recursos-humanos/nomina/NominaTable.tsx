@@ -24,7 +24,8 @@ import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Link from 'next/link';
 import PersonalDetailsDialog from './PersonalDetailsDialog'; 
-import { NominaFilters, type NominaFilters as FiltersState } from './NominaTableFilters';
+// Importar el componente y el tipo de filtro
+import { NominaTableFilters, type NominaFilters } from './NominaTableFilters';
 import { useToast } from '@/hooks/use-toast';
 
 export const formatDateSafe = (dateString?: string) => {
@@ -46,7 +47,8 @@ export default function NominaTable() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [personalToDeleteId, setPersonalToDeleteId] = useState<string | null>(null);
 
-  const [filters, setFilters] = useState<FiltersState>({
+  // Usar el tipo NominaFilters para el estado de los filtros
+  const [filters, setFilters] = useState<NominaFilters>({
     ubicacion: 'todas',
     obraAsignada: '',
     tipoContratacion: 'todas',
@@ -60,8 +62,10 @@ export default function NominaTable() {
   const filteredPersonalList = useMemo(() => {
     return personalList.filter(p => {
       const matchUbicacion = filters.ubicacion === 'todas' || p.ubicacion === filters.ubicacion;
+      // Solo aplicar filtro de obraAsignada si la ubicación es 'Obra' Y hay una obra seleccionada
       const matchObra = filters.ubicacion !== 'Obra' || filters.obraAsignada === '' || p.obraAsignada === filters.obraAsignada;
       const matchTipoContratacion = filters.tipoContratacion === 'todas' || p.tipoContratacion === filters.tipoContratacion;
+      // Solo aplicar filtro de areaOficina si la ubicación es 'Oficina' Y hay un área seleccionada
       const matchArea = filters.ubicacion !== 'Oficina' || filters.areaOficina === 'todas' || p.areaOficina === filters.areaOficina;
       
       return matchUbicacion && matchObra && matchTipoContratacion && matchArea;
