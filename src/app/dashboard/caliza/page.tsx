@@ -10,7 +10,7 @@ interface TimeElapsed {
   days: number;
   hours: number;
   minutes: number;
-  seconds: number; // Added seconds
+  seconds: number; 
 }
 
 export default function CalizaPage() {
@@ -22,6 +22,8 @@ export default function CalizaPage() {
     const date = new Date();
     date.setMonth(date.getMonth() - 2);
     date.setDate(date.getDate() - 5);
+    // For consistency, let's set a specific time, e.g., midnight for the start date.
+    date.setHours(0, 0, 0, 0);
     setStartDate(date);
   }, []);
 
@@ -42,7 +44,7 @@ export default function CalizaPage() {
       const days = Math.floor((totalSecondsDifference % (60 * 60 * 24 * 7)) / (60 * 60 * 24));
       const hours = Math.floor((totalSecondsDifference % (60 * 60 * 24)) / (60 * 60));
       const minutes = Math.floor((totalSecondsDifference % (60 * 60)) / 60);
-      const seconds = totalSecondsDifference % 60; // Calculate seconds
+      const seconds = totalSecondsDifference % 60; 
 
       setTimeElapsed({ weeks, days, hours, minutes, seconds });
     };
@@ -74,7 +76,7 @@ export default function CalizaPage() {
 
   return (
     <div className="flex justify-center items-start pt-6 md:pt-10">
-      <Card className="shadow-lg w-full max-w-3xl mx-auto"> {/* Increased max-width for wider display */}
+      <Card className="shadow-lg w-full max-w-3xl mx-auto"> 
         <CardHeader>
           <div className="flex items-center space-x-3">
             <Mountain className="h-8 w-8 text-primary" />
