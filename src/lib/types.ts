@@ -73,20 +73,28 @@ export type UbicacionPersonal = "Obra" | "Oficina";
 export const TIPOS_CONTRATACION = ["Línea A", "Línea B"] as const;
 export type TipoContratacion = typeof TIPOS_CONTRATACION[number];
 
+export const ESTADOS_CIVILES = ["Soltero/a", "Casado/a", "Unión convivencial", "Divorciado/a", "Viudo/a"] as const;
+export type EstadoCivil = typeof ESTADOS_CIVILES[number];
+
+export const ESTADOS_PERSONAL = ["Alta", "Baja"] as const;
+export type EstadoPersonal = typeof ESTADOS_PERSONAL[number];
+
 export interface Personal {
   id: string;
   nombreCompleto: string;
   dni: string;
   fechaNacimiento: string; // Store as ISO string
-  ubicacion: UbicacionPersonal;
-  obraAsignada?: string; // Requerido si ubicacion es "Obra"
-  areaOficina?: Role; // Requerido si ubicacion es "Oficina"
+  ubicacionLaboral: UbicacionPersonal; // Renamed from 'ubicacion' for clarity
+  obraAsignada?: string; // Requerido si ubicacionLaboral es "Obra"
+  areaOficina?: Role; // Requerido si ubicacionLaboral es "Oficina"
   tipoContratacion: TipoContratacion;
-  estadoCivil: string;
+  estadoCivil: EstadoCivil;
   tieneHijos: boolean;
   obraSocial: string;
   datosMedicosAdicionales?: string;
   archivoExamenPreocupacional?: string; // filename
+  estadoPersonal: EstadoPersonal;
+  fechaBaja?: string; // Store as ISO string, optional
   createdBy?: Role;
   createdAt?: string; // ISO string
 }

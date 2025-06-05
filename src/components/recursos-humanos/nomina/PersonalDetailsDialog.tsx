@@ -28,7 +28,6 @@ const PersonalDetailsDialog: React.FC<PersonalDetailsDialogProps> = ({ personal,
   const handleDownload = (fileName?: string) => {
     if (fileName) {
       alert(`Simulando descarga de Examen Preocupacional: ${fileName}`);
-      // En una aplicación real, aquí se implementaría la lógica de descarga del archivo.
     } else {
       alert(`No hay archivo de examen preocupacional disponible para esta persona.`);
     }
@@ -45,13 +44,24 @@ const PersonalDetailsDialog: React.FC<PersonalDetailsDialogProps> = ({ personal,
           <div><strong>ID:</strong> {personal.id}</div>
           <div><strong>DNI:</strong> {personal.dni}</div>
           <div><strong>Fecha de Nacimiento:</strong> {formatDateSafe(personal.fechaNacimiento)}</div>
-          <div><strong>Ubicación:</strong> <Badge variant={personal.ubicacion === "Oficina" ? "secondary" : "default"}>{personal.ubicacion}</Badge></div>
-          {personal.ubicacion === "Obra" && <div><strong>Obra Asignada:</strong> {personal.obraAsignada || 'N/A'}</div>}
-          {personal.ubicacion === "Oficina" && <div><strong>Área Oficina:</strong> {personal.areaOficina || 'N/A'}</div>}
+          <div><strong>Ubicación Laboral:</strong> <Badge variant={personal.ubicacionLaboral === "Oficina" ? "secondary" : "default"}>{personal.ubicacionLaboral}</Badge></div>
+          {personal.ubicacionLaboral === "Obra" && <div><strong>Obra Asignada:</strong> {personal.obraAsignada || 'N/A'}</div>}
+          {personal.ubicacionLaboral === "Oficina" && <div><strong>Área Oficina:</strong> {personal.areaOficina || 'N/A'}</div>}
           <div><strong>Tipo Contratación:</strong> <Badge variant="outline">{personal.tipoContratacion}</Badge></div>
           <div><strong>Estado Civil:</strong> {personal.estadoCivil}</div>
           <div><strong>Tiene Hijos:</strong> {personal.tieneHijos ? 'Sí' : 'No'}</div>
           <div><strong>Obra Social:</strong> {personal.obraSocial}</div>
+          <div>
+            <strong>Estado Personal:</strong> 
+            <Badge
+                variant="outline"
+                className={`ml-2 ${personal.estadoPersonal === 'Alta' ? 'bg-green-100 text-green-800 border-green-300 dark:bg-green-800 dark:text-green-100 dark:border-green-600' : 'bg-red-100 text-red-800 border-red-300 dark:bg-red-800 dark:text-red-100 dark:border-red-600'}`}
+            >
+                {personal.estadoPersonal}
+            </Badge>
+          </div>
+          {personal.estadoPersonal === "Baja" && <div><strong>Fecha de Baja:</strong> {formatDateSafe(personal.fechaBaja)}</div>}
+          
           {personal.datosMedicosAdicionales && <div className="md:col-span-2 mt-2"><strong>Datos Médicos Adicionales:</strong> <p className="whitespace-pre-wrap text-muted-foreground">{personal.datosMedicosAdicionales}</p></div>}
           
           <h4 className="md:col-span-2 text-md font-semibold text-primary mt-3">Examen Preocupacional</h4>

@@ -27,7 +27,15 @@ export const PersonalProvider = ({ children }: { children: ReactNode }) => {
     try {
       const storedPersonal = localStorage.getItem(PERSONAL_STORAGE_KEY);
       if (storedPersonal) {
-        setPersonalList(JSON.parse(storedPersonal));
+        // Ensure all fields, including new ones, have default values if missing from localStorage
+        const parsedList = JSON.parse(storedPersonal) as Personal[];
+        const migratedList = parsedList.map(p => ({
+          ...p,
+          estadoPersonal: p.estadoPersonal || 'Alta', // Default to 'Alta' if missing
+          estadoCivil: p.estadoCivil || 'Soltero/a', // Default if missing
+          ubicacionLaboral: p.ubicacionLaboral || (p as any).ubicacion || 'Oficina', // Handle potential old 'ubicacion' field
+        }));
+        setPersonalList(migratedList);
       }
     } catch (error) {
       console.error("Failed to access localStorage for personal list:", error);
@@ -75,6 +83,8 @@ export const PersonalProvider = ({ children }: { children: ReactNode }) => {
     const updatedPersonal: Personal = {
       ...existingPersonal,
       ...personalData,
+      // Ensure fechaBaja is explicitly set to undefined if estado is Alta and fechaBaja was provided
+      fechaBaja: personalData.estadoPersonal === 'Alta' ? undefined : personalData.fechaBaja,
     };
     const updatedList = [...personalList];
     updatedList[personalIndex] = updatedPersonal;
