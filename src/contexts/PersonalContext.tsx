@@ -2,13 +2,14 @@
 "use client";
 
 import type { Personal, Role } from '@/lib/types';
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 interface PersonalContextType {
   personalList: Personal[];
   addPersonal: (personalData: Omit<Personal, 'id' | 'createdAt' | 'createdBy'>, creatorRole: Role) => void;
   updatePersonal: (id: string, personalData: Omit<Personal, 'id' | 'createdAt' | 'createdBy'>) => void;
+  deletePersonal: (id: string) => void;
   getPersonalById: (id: string) => Personal | undefined;
   isLoading: boolean;
 }
@@ -39,7 +40,7 @@ export const PersonalProvider = ({ children }: { children: ReactNode }) => {
     setIsLoading(false);
   }, [toast]);
 
-  const savePersonalList = (updatedList: Personal[]) => {
+  const savePersonalList = useCallback((updatedList: Personal[]) => {
     try {
       localStorage.setItem(PERSONAL_STORAGE_KEY, JSON.stringify(updatedList));
       setPersonalList(updatedList);
@@ -51,12 +52,12 @@ export const PersonalProvider = ({ children }: { children: ReactNode }) => {
         variant: "destructive",
       });
     }
-  };
+  }, [toast]);
 
   const addPersonal = (personalData: Omit<Personal, 'id' | 'createdAt' | 'createdBy'>, creatorRole: Role) => {
     const newPersonal: Personal = {
       ...personalData,
-      id: Date.now().toString(), // Simple ID generation
+      id: Date.now().toString(), 
       createdAt: new Date().toISOString(),
       createdBy: creatorRole,
     };
@@ -80,12 +81,22 @@ export const PersonalProvider = ({ children }: { children: ReactNode }) => {
     savePersonalList(updatedList);
   };
 
+  const deletePersonal = (id: string) => {
+    const updatedList = personalList.filter(p => p.id !== id);
+    if (updatedList.length === personalList.length) {
+        toast({ title: "Error", description: "No se encontró el personal a eliminar.", variant: "destructive" });
+        return;
+    }
+    savePersonalList(updatedList);
+    toast({ title: "Personal Eliminado", description: "El registro ha sido eliminado de la nómina."});
+  };
+
   const getPersonalById = (id: string): Personal | undefined => {
     return personalList.find(p => p.id === id);
   };
 
   return (
-    <PersonalContext.Provider value={{ personalList, addPersonal, updatePersonal, getPersonalById, isLoading }}>
+    <PersonalContext.Provider value={{ personalList, addPersonal, updatePersonal, deletePersonal, getPersonalById, isLoading }}>
       {children}
     </PersonalContext.Provider>
   );
