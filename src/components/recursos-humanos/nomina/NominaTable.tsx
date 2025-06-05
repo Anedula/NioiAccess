@@ -111,7 +111,6 @@ export default function NominaTable() {
               <TableHead>Ubicación Laboral</TableHead>
               <TableHead>Detalle Ubicación</TableHead>
               <TableHead>Estado</TableHead>
-              <TableHead>Fecha de Baja</TableHead>
               {showActionsColumn && <TableHead className="text-center">Acciones</TableHead>}
             </TableRow>
           </TableHeader>
@@ -132,9 +131,6 @@ export default function NominaTable() {
                       {personal.estadoPersonal}
                     </Badge>
                   </TableCell>
-                  <TableCell>
-                    {personal.estadoPersonal === 'Baja' ? formatDateSafe(personal.fechaBaja) : 'N/A'}
-                  </TableCell>
                   {showActionsColumn && (
                     <TableCell className="text-center space-x-1">
                       <Button variant="ghost" size="icon" onClick={() => handleViewDetails(personal)} title="Ver Detalles">
@@ -154,7 +150,7 @@ export default function NominaTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={showActionsColumn ? 8 : 7} className="text-center h-24">
+                <TableCell colSpan={showActionsColumn ? 7 : 6} className="text-center h-24">
                   No hay personal cargado o que coincida con los filtros.
                 </TableCell>
               </TableRow>
@@ -190,3 +186,4 @@ export default function NominaTable() {
     </div>
   );
 }
+
