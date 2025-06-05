@@ -1,10 +1,12 @@
+
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { Toaster } from '@/components/ui/toaster';
 import { ObrasProvider } from '@/contexts/ObrasContext';
-import { PersonalProvider } from '@/contexts/PersonalContext'; // Nueva importación
-import { AsistenciaProvider } from '@/contexts/AsistenciaContext'; // Nueva importación
+import { PersonalProvider } from '@/contexts/PersonalContext';
+import { AsistenciaProvider } from '@/contexts/AsistenciaContext';
+import { ReservasSalaProvider } from '@/contexts/ReservasSalaContext'; // Nueva importación
 
 export const metadata: Metadata = {
   title: 'GRUPO NIOI',
@@ -26,10 +28,12 @@ export default function RootLayout({
       <body className="font-body antialiased">
         <AuthProvider>
           <ObrasProvider>
-            <PersonalProvider> {/* Envolver con PersonalProvider */}
-              <AsistenciaProvider> {/* Envolver con AsistenciaProvider */}
-                {children}
-                <Toaster />
+            <PersonalProvider>
+              <AsistenciaProvider>
+                <ReservasSalaProvider> {/* Envolver con ReservasSalaProvider */}
+                  {children}
+                  <Toaster />
+                </ReservasSalaProvider>
               </AsistenciaProvider>
             </PersonalProvider>
           </ObrasProvider>

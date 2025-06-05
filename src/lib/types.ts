@@ -1,3 +1,4 @@
+
 export const ALL_ROLES = [
   "Administración",
   "Comercial",
@@ -101,4 +102,16 @@ export interface RegistroAsistencia {
     estado: EstadoAsistencia;
     registradoPor?: Role;
     registradoAt?: string; // ISO string
+}
+
+// Tipos para Sala de Reuniones
+export interface ReservaSala {
+  id: string;
+  fecha: string; // YYYY-MM-DD
+  horaInicio: string; // HH:mm
+  horaFin: string; // HH:mm
+  responsable: string;
+  tema: string;
+  createdBy?: Role;
+  createdAt?: string; // ISO string
 }

@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/sidebar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import { LogOut, LayoutDashboard, ListOrdered, UsersRound, Mountain, Megaphone, Settings, Building2 } from 'lucide-react';
+import { LogOut, LayoutDashboard, ListOrdered, UsersRound, Mountain, Megaphone, Settings, Building2, CalendarDays } from 'lucide-react';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -27,6 +27,7 @@ const navItems = [
   { href: '/dashboard/recursos-humanos', label: 'Recursos Humanos', icon: UsersRound },
   { href: '/dashboard/caliza', label: 'Caliza', icon: Mountain },
   { href: '/dashboard/eventos', label: 'Eventos', icon: Megaphone },
+  { href: '/dashboard/sala-reuniones', label: 'Sala de Reuniones', icon: CalendarDays },
 ];
 
 export default function DashboardNav({ children }: { children: React.ReactNode }) {
