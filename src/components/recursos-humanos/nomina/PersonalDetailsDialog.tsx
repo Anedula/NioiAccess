@@ -48,6 +48,7 @@ const PersonalDetailsDialog: React.FC<PersonalDetailsDialogProps> = ({ personal,
           <div><strong>Ubicación:</strong> <Badge variant={personal.ubicacion === "Oficina" ? "secondary" : "default"}>{personal.ubicacion}</Badge></div>
           {personal.ubicacion === "Obra" && <div><strong>Obra Asignada:</strong> {personal.obraAsignada || 'N/A'}</div>}
           {personal.ubicacion === "Oficina" && <div><strong>Área Oficina:</strong> {personal.areaOficina || 'N/A'}</div>}
+          <div><strong>Tipo Contratación:</strong> <Badge variant="outline">{personal.tipoContratacion}</Badge></div>
           <div><strong>Estado Civil:</strong> {personal.estadoCivil}</div>
           <div><strong>Tiene Hijos:</strong> {personal.tieneHijos ? 'Sí' : 'No'}</div>
           <div><strong>Obra Social:</strong> {personal.obraSocial}</div>

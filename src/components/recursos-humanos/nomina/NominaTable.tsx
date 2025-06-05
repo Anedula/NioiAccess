@@ -52,6 +52,7 @@ export default function NominaTable() {
               <TableHead>DNI</TableHead>
               <TableHead>Ubicación</TableHead>
               <TableHead>Detalle Ubicación</TableHead>
+              <TableHead>Tipo Contratación</TableHead>
               <TableHead>Obra Social</TableHead>
               {userRole === 'Recursos Humanos' && <TableHead className="text-center">Acciones</TableHead>}
             </TableRow>
@@ -64,6 +65,7 @@ export default function NominaTable() {
                   <TableCell>{personal.dni}</TableCell>
                   <TableCell><Badge variant={personal.ubicacion === "Oficina" ? "secondary" : "default"}>{personal.ubicacion}</Badge></TableCell>
                   <TableCell>{personal.ubicacion === 'Obra' ? personal.obraAsignada : personal.areaOficina}</TableCell>
+                  <TableCell><Badge variant="outline">{personal.tipoContratacion}</Badge></TableCell>
                   <TableCell>{personal.obraSocial}</TableCell>
                   {userRole === 'Recursos Humanos' && (
                     <TableCell className="text-center space-x-1">
@@ -81,7 +83,7 @@ export default function NominaTable() {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={userRole === 'Recursos Humanos' ? 6 : 5} className="text-center h-24">
+                <TableCell colSpan={userRole === 'Recursos Humanos' ? 7 : 6} className="text-center h-24">
                   No hay personal cargado en la nómina.
                 </TableCell>
               </TableRow>

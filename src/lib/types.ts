@@ -69,6 +69,8 @@ export type UnidadValidez = typeof UNIDADES_VALIDEZ[number];
 
 // Tipos para Recursos Humanos - Nómina
 export type UbicacionPersonal = "Obra" | "Oficina";
+export const TIPOS_CONTRATACION = ["Línea A", "Línea B"] as const;
+export type TipoContratacion = typeof TIPOS_CONTRATACION[number];
 
 export interface Personal {
   id: string;
@@ -78,6 +80,7 @@ export interface Personal {
   ubicacion: UbicacionPersonal;
   obraAsignada?: string; // Requerido si ubicacion es "Obra"
   areaOficina?: Role; // Requerido si ubicacion es "Oficina"
+  tipoContratacion: TipoContratacion;
   estadoCivil: string;
   tieneHijos: boolean;
   obraSocial: string;

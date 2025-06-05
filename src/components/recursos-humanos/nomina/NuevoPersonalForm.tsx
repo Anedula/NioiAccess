@@ -16,8 +16,9 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { usePersonal } from '@/contexts/PersonalContext';
 import { useAuth } from '@/contexts/AuthContext';
-import type { Personal, Role, UbicacionPersonal } from '@/lib/types';
+import type { Personal, Role, UbicacionPersonal, TipoContratacion } from '@/lib/types';
 import { ROLES } from '@/lib/auth';
+import { TIPOS_CONTRATACION } from '@/lib/types';
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
 import { format, parseISO } from "date-fns";
@@ -32,6 +33,7 @@ const personalSchema = z.object({
   ubicacion: z.custom<UbicacionPersonal>((val) => ["Obra", "Oficina"].includes(val as UbicacionPersonal), "Ubicación no válida"),
   obraAsignada: z.string().optional(),
   areaOficina: z.custom<Role>((val) => ROLES.includes(val as Role)).optional(),
+  tipoContratacion: z.custom<TipoContratacion>((val) => TIPOS_CONTRATACION.includes(val as TipoContratacion), "Tipo de contratación no válido."),
   estadoCivil: z.string().min(1, "El estado civil es obligatorio."),
   tieneHijos: z.boolean().default(false),
   obraSocial: z.string().min(1, "La obra social es obligatoria."),
@@ -63,9 +65,10 @@ export default function NuevoPersonalForm({ personalToEdit }: NuevoPersonalFormP
     defaultValues: {
       nombreCompleto: '',
       dni: '',
-      ubicacion: undefined, // Para que el placeholder del select se muestre
+      ubicacion: undefined, 
       obraAsignada: '',
-      areaOficina: undefined, // Para que el placeholder del select se muestre
+      areaOficina: undefined,
+      tipoContratacion: undefined,
       estadoCivil: '',
       tieneHijos: false,
       obraSocial: '',
@@ -78,7 +81,7 @@ export default function NuevoPersonalForm({ personalToEdit }: NuevoPersonalFormP
       form.reset({
         ...personalToEdit,
         fechaNacimiento: personalToEdit.fechaNacimiento ? parseISO(personalToEdit.fechaNacimiento) : undefined,
-        archivoExamenPreocupacional: undefined, // Dejar que el usuario cargue uno nuevo si es necesario
+        archivoExamenPreocupacional: undefined, 
       });
     }
   }, [personalToEdit, form]);
@@ -140,6 +143,28 @@ export default function NuevoPersonalForm({ personalToEdit }: NuevoPersonalFormP
                 <FormField control={form.control} name="ubicacion" render={({ field }) => ( <FormItem> <FormLabel>Ubicación del Personal</FormLabel> <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar ubicación" /></SelectTrigger></FormControl><SelectContent><SelectItem value="Obra">Obra</SelectItem><SelectItem value="Oficina">Oficina</SelectItem></SelectContent></Select><FormMessage /></FormItem>)} />
                 {ubicacionSeleccionada === "Obra" && <FormField control={form.control} name="obraAsignada" render={({ field }) => ( <FormItem> <FormLabel>Obra Asignada</FormLabel> <FormControl><Input {...field} /></FormControl> <FormMessage /> </FormItem> )} />}
                 {ubicacionSeleccionada === "Oficina" && <FormField control={form.control} name="areaOficina" render={({ field }) => ( <FormItem> <FormLabel>Área de Oficina</FormLabel> <Select onValueChange={field.onChange} value={field.value}><FormControl><SelectTrigger><SelectValue placeholder="Seleccionar área" /></SelectTrigger></FormControl><SelectContent>{ROLES.map(role => <SelectItem key={role} value={role}>{role}</SelectItem>)}</SelectContent></Select><FormMessage /></FormItem>)} />}
+                <FormField
+                  control={form.control}
+                  name="tipoContratacion"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo de Contratación</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Seleccionar tipo" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {TIPOS_CONTRATACION.map(tipo => (
+                            <SelectItem key={tipo} value={tipo}>{tipo}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
               </div>
             </div>
 
