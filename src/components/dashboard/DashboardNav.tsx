@@ -41,7 +41,7 @@ const navItems: NavItem[] = [
     href: '/dashboard/compras', 
     label: 'Área de Compras', 
     icon: ShoppingCart,
-    allowedRoles: ['Compras'] 
+    // allowedRoles: ['Compras'] // Removed role restriction
   },
   { href: '/dashboard/recursos-humanos', label: 'Recursos Humanos', icon: UsersRound },
   { href: '/dashboard/caliza', label: 'Caliza', icon: Mountain },
