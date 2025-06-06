@@ -9,12 +9,12 @@ export default function WelcomePage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="items-center text-center">
           <Image 
-            src="https://placehold.co/150x150.png?text=Logo" 
+            src="https://placehold.co/150x150.png" 
             alt="Grupo Nioi Logo" 
             width={120} 
             height={120}
             className="mb-6 rounded-full"
-            data-ai-hint="company logo"
+            data-ai-hint="engineer helmet"
           />
           <CardTitle className="text-3xl font-headline text-primary">
             Bienvenido a Grupo Nioi

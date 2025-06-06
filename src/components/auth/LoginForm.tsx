@@ -61,12 +61,12 @@ export default function LoginForm() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="items-center text-center">
            <Image 
-            src="https://placehold.co/100x100.png?text=Logo" 
+            src="https://placehold.co/100x100.png" 
             alt="Grupo Nioi Logo" 
             width={80} 
             height={80}
             className="mb-4 rounded-full"
-            data-ai-hint="company logo"
+            data-ai-hint="engineer helmet"
           />
           <CardTitle className="text-2xl font-headline text-primary">Iniciar Sesión</CardTitle>
           <CardDescription>Seleccione su rol e ingrese su contraseña.</CardDescription>
