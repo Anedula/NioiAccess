@@ -28,13 +28,10 @@ import { LogOut, LayoutDashboard, ListOrdered, UsersRound, Mountain, Megaphone, 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   {
-    href: '/dashboard/oficina-tecnica',
+    href: '/dashboard/oficina-tecnica/obras', // Updated: Direct link to obras
     label: 'Oficina Técnica',
     icon: Building2,
-    subItems: [
-      { href: '/dashboard/oficina-tecnica/obras', label: 'Listado de Obras', icon: ListOrdered },
-      // Future sub-items for Oficina Técnica can be added here
-    ]
+    // subItems removed as per new requirement
   },
   { href: '/dashboard/recursos-humanos', label: 'Recursos Humanos', icon: UsersRound },
   { href: '/dashboard/caliza', label: 'Caliza', icon: Mountain },
@@ -70,7 +67,8 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
                       <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                     </SidebarMenuButton>
                   </Link>
-                  {item.subItems && (
+                  {/* SubItems logic removed for Oficina Técnica, kept for potential future use by other items */}
+                  {item.subItems && item.label !== 'Oficina Técnica' && ( 
                     <SidebarMenuSub className="group-data-[collapsible=icon]:hidden">
                       {item.subItems.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.href}>
