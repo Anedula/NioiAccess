@@ -66,8 +66,8 @@ export default function PedidoPrecioDialog({ isOpen, onOpenChange, itemToEdit }:
       cantidad: 1,
       obraDestinoId: '',
       tipo: PEDIDO_PRECIO_TIPOS[0],
-      precioUnitarioARS: undefined,
-      precioUnitarioUSD: undefined,
+      precioUnitarioARS: '', // Initialize with empty string
+      precioUnitarioUSD: '', // Initialize with empty string
       presupuestoPdf: undefined,
     },
   });
@@ -76,28 +76,30 @@ export default function PedidoPrecioDialog({ isOpen, onOpenChange, itemToEdit }:
   const selectedUnidad = watch("unidad");
 
   useEffect(() => {
-    if (itemToEdit) {
-      form.reset({
-        ...itemToEdit,
-        cantidad: itemToEdit.cantidad ?? 1,
-        precioUnitarioARS: itemToEdit.precioUnitarioARS ?? undefined,
-        precioUnitarioUSD: itemToEdit.precioUnitarioUSD ?? undefined,
-        presupuestoPdf: undefined, // File input should reset
-      });
-    } else {
-      form.reset({ // Default for new item
-        descripcion: '',
-        unidad: PEDIDO_PRECIO_UNIDADES[0],
-        unidadPersonalizada: '',
-        cantidad: 1,
-        obraDestinoId: '',
-        tipo: PEDIDO_PRECIO_TIPOS[0],
-        precioUnitarioARS: undefined,
-        precioUnitarioUSD: undefined,
-        presupuestoPdf: undefined,
-      });
+    if (isOpen) {
+        if (itemToEdit) {
+          form.reset({
+            ...itemToEdit,
+            cantidad: itemToEdit.cantidad ?? 1,
+            precioUnitarioARS: itemToEdit.precioUnitarioARS ?? '', // Default to empty string if null/undefined
+            precioUnitarioUSD: itemToEdit.precioUnitarioUSD ?? '', // Default to empty string if null/undefined
+            presupuestoPdf: undefined, 
+          });
+        } else {
+          form.reset({ 
+            descripcion: '',
+            unidad: PEDIDO_PRECIO_UNIDADES[0],
+            unidadPersonalizada: '',
+            cantidad: 1,
+            obraDestinoId: '',
+            tipo: PEDIDO_PRECIO_TIPOS[0],
+            precioUnitarioARS: '', // Ensure reset to empty string
+            precioUnitarioUSD: '', // Ensure reset to empty string
+            presupuestoPdf: undefined,
+          });
+        }
     }
-  }, [itemToEdit, isOpen, form]); // Re-run on isOpen to reset form when dialog reopens
+  }, [itemToEdit, isOpen, form.reset]);
 
   const onSubmit = (data: PedidoPrecioFormValues) => {
     if (!userRole) return;
@@ -111,28 +113,29 @@ export default function PedidoPrecioDialog({ isOpen, onOpenChange, itemToEdit }:
         tipo: data.tipo,
     };
 
+    // Convert empty strings for prices to undefined before submission if they are truly optional
+    // and an empty string should not be coerced to 0 by the schema if that's not desired.
+    // Zod's coerce.number() will turn '' into 0. If 0 is a valid price, this is fine.
+    // If an empty field should mean 'not set' (undefined), this logic might need adjustment based on backend/data model.
+    // For now, this submission logic keeps them as numbers (or 0 if coerced from '').
     const comprasData = {
-        precioUnitarioARS: data.precioUnitarioARS,
-        precioUnitarioUSD: data.precioUnitarioUSD,
+        precioUnitarioARS: data.precioUnitarioARS, // Will be number due to z.coerce.number()
+        precioUnitarioUSD: data.precioUnitarioUSD, // Will be number due to z.coerce.number()
         presupuestoPdf: data.presupuestoPdf?.[0]?.name || (itemToEdit && userRole === 'Compras' ? itemToEdit.presupuestoPdf : undefined),
     };
 
-    if (itemToEdit) { // Editing existing item
+    if (itemToEdit) { 
       if (userRole === 'Oficina Técnica') {
         updatePedidoPrecioItemOT(itemToEdit.id, otData);
       } else if (userRole === 'Compras') {
-        // Compras might update OT fields if allowed, or just their own.
-        // Current spec: Compras only updates prices/PDF.
-        // If OT fields were also updatable by Compras, it would be:
-        // updatePedidoPrecioItemOT(itemToEdit.id, otData); // If Compras could also edit OT parts
         updatePedidoPrecioItemCompras(itemToEdit.id, comprasData, userRole as Role);
       }
-    } else { // Adding new item (only Oficina Técnica)
+    } else { 
       if (userRole === 'Oficina Técnica') {
         addPedidoPrecioItem(otData, userRole as Role);
       }
     }
-    onOpenChange(false); // Close dialog
+    onOpenChange(false); 
   };
 
   const isOTField = (fieldName: keyof PedidoPrecioFormValues) => 
@@ -142,7 +145,7 @@ export default function PedidoPrecioDialog({ isOpen, onOpenChange, itemToEdit }:
     ['precioUnitarioARS', 'precioUnitarioUSD', 'presupuestoPdf'].includes(fieldName);
 
   const readOnlyForRole = (fieldName: keyof PedidoPrecioFormValues) => {
-    if (!itemToEdit) return false; // New item, OT can edit their fields
+    if (!itemToEdit) return false; 
     if (userRole === 'Oficina Técnica' && isComprasField(fieldName)) return true;
     if (userRole === 'Compras' && isOTField(fieldName)) return true;
     return false;
@@ -187,8 +190,8 @@ export default function PedidoPrecioDialog({ isOpen, onOpenChange, itemToEdit }:
                         <h3 className="text-lg font-medium text-primary mb-2">Información de Compras</h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <FormField control={form.control} name="precioUnitarioARS" render={({ field }) => ( <FormItem> <FormLabel>Precio Unitario (ARS)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} readOnly={readOnlyForRole('precioUnitarioARS')} /></FormControl> <FormMessage /> </FormItem> )} />
-                        <FormField control={form.control} name="precioUnitarioUSD" render={({ field }) => ( <FormItem> <FormLabel>Precio Unitario (USD)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} readOnly={readOnlyForRole('precioUnitarioUSD')} /></FormControl> <FormMessage /> </FormItem> )} />
+                        <FormField control={form.control} name="precioUnitarioARS" render={({ field }) => ( <FormItem> <FormLabel>Precio Unitario (ARS)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} value={field.value === null || field.value === undefined ? '' : field.value} readOnly={readOnlyForRole('precioUnitarioARS')} /></FormControl> <FormMessage /> </FormItem> )} />
+                        <FormField control={form.control} name="precioUnitarioUSD" render={({ field }) => ( <FormItem> <FormLabel>Precio Unitario (USD)</FormLabel> <FormControl><Input type="number" step="0.01" {...field} value={field.value === null || field.value === undefined ? '' : field.value} readOnly={readOnlyForRole('precioUnitarioUSD')} /></FormControl> <FormMessage /> </FormItem> )} />
                     </div>
                     <FormField control={form.control} name="presupuestoPdf" render={({ field: { onChange, value, ...rest }}) => ( <FormItem> <FormLabel>Presupuesto PDF {itemToEdit?.presupuestoPdf && userRole === 'Compras' && `(Actual: ${itemToEdit.presupuestoPdf})`}</FormLabel> <FormControl><Input type="file" accept=".pdf" onChange={(e) => onChange(e.target.files)} {...rest} disabled={readOnlyForRole('presupuestoPdf')} /></FormControl> <FormDescription>Cargar presupuesto en PDF. Si no selecciona uno nuevo, se mantendrá el actual (si existe).</FormDescription> <FormMessage /> </FormItem> )} />
                 </>
