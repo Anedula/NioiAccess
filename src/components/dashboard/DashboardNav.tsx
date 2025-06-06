@@ -41,7 +41,7 @@ const navItems: NavItem[] = [
     href: '/dashboard/compras', 
     label: 'Área de Compras', 
     icon: ShoppingCart,
-    // allowedRoles: ['Compras'] // Removed role restriction
+    // allowedRoles: ['Compras'] // No longer restricted
   },
   { href: '/dashboard/recursos-humanos', label: 'Recursos Humanos', icon: UsersRound },
   { href: '/dashboard/caliza', label: 'Caliza', icon: Mountain },
@@ -64,7 +64,7 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
       <Sidebar className="border-r no-print">
         <SidebarHeader className="p-4 border-b">
           <Link href="/dashboard" className="flex items-center gap-2">
-            <Image src="https://placehold.co/40x40.png?text=GN" alt="Logo" width={32} height={32} className="rounded-sm" data-ai-hint="company logo"/>
+            <Image src="https://placehold.co/40x40/2a3045/FFFFFF.png?text=GN" alt="Logo Grupo Nioi" width={32} height={32} className="rounded-sm" data-ai-hint="company logo new"/>
             <h1 className="text-lg font-semibold font-headline text-sidebar-foreground group-data-[collapsible=icon]:hidden">GRUPO NIOI</h1>
           </Link>
         </SidebarHeader>
