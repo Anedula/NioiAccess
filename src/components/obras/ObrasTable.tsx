@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { format, parseISO } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Link from 'next/link';
-import ObraDetailsDialog from './ObraDetailsDialog'; // Nueva importación
+import ObraDetailsDialog from './ObraDetailsDialog';
 
 export const formatDateSafe = (dateString?: string) => {
   if (!dateString) return 'N/A';
@@ -117,13 +117,12 @@ export default function ObrasTable() {
                           <Eye className="h-4 w-4" />
                       </Button>
                       {userRole === 'Oficina Técnica' && (
-                        <Link href={`/dashboard/obras/editar/${obra.id}`} passHref>
+                        <Link href={`/dashboard/oficina-tecnica/obras/editar/${obra.id}`} passHref>
                           <Button variant="ghost" size="sm" title="Editar Obra">
                             <Pencil className="h-4 w-4" />
                           </Button>
                         </Link>
                       )}
-                      {/* Los botones de descarga ahora estarán en el diálogo de detalles */}
                     </TableCell>
                   )}
                 </TableRow>

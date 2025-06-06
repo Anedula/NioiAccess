@@ -75,7 +75,7 @@ const obraSchema = z.object({
 export type ObraFormValues = z.infer<typeof obraSchema>;
 
 interface NuevaObraFormProps {
-  obraToEdit?: Obra; // Obra a editar, si existe
+  obraToEdit?: Obra; 
 }
 
 export default function NuevaObraForm({ obraToEdit }: NuevaObraFormProps) {
@@ -92,7 +92,6 @@ export default function NuevaObraForm({ obraToEdit }: NuevaObraFormProps) {
       moneda: "ARS",
       anio_licitacion: new Date().getFullYear(),
       unidad_validez: "días",
-      // Otros campos se llenarán desde obraToEdit si está presente
     },
   });
 
@@ -100,14 +99,12 @@ export default function NuevaObraForm({ obraToEdit }: NuevaObraFormProps) {
     if (obraToEdit) {
       form.reset({
         ...obraToEdit,
-        // Convertir strings de fecha a objetos Date para los campos del calendario
         fecha_invitacion: obraToEdit.fecha_invitacion ? parseISO(obraToEdit.fecha_invitacion) : undefined,
         fecha_presentacion: obraToEdit.fecha_presentacion ? parseISO(obraToEdit.fecha_presentacion) : undefined,
         fecha_inicio_obra: obraToEdit.fecha_inicio_obra ? parseISO(obraToEdit.fecha_inicio_obra) : undefined,
         fecha_finalizacion_obra: obraToEdit.fecha_finalizacion_obra ? parseISO(obraToEdit.fecha_finalizacion_obra) : undefined,
         fecha_recepcion_provisoria: obraToEdit.fecha_recepcion_provisoria ? parseISO(obraToEdit.fecha_recepcion_provisoria) : undefined,
         fecha_recepcion_definitiva: obraToEdit.fecha_recepcion_definitiva ? parseISO(obraToEdit.fecha_recepcion_definitiva) : undefined,
-        // Los campos de archivo se dejan para que el usuario los vuelva a cargar si es necesario
         archivo_oferta_pdf: undefined, 
         archivo_descripcion_pdf: undefined,
       });
@@ -130,7 +127,6 @@ export default function NuevaObraForm({ obraToEdit }: NuevaObraFormProps) {
       fecha_presentacion: data.fecha_presentacion.toISOString(),
       fecha_inicio_obra: data.fecha_inicio_obra?.toISOString(),
       fecha_finalizacion_obra: data.fecha_finalizacion_obra?.toISOString(),
-      // Conservar nombres de archivo existentes si no se carga uno nuevo en modo edición
       archivo_oferta_pdf: data.archivo_oferta_pdf?.[0]?.name || (obraToEdit ? obraToEdit.archivo_oferta_pdf : undefined),
       archivo_descripcion_pdf: data.archivo_descripcion_pdf?.[0]?.name || (obraToEdit ? obraToEdit.archivo_descripcion_pdf : undefined),
       fecha_recepcion_provisoria: data.fecha_recepcion_provisoria?.toISOString(),
@@ -144,7 +140,7 @@ export default function NuevaObraForm({ obraToEdit }: NuevaObraFormProps) {
       addObra(obraPayload, userRole);
       toast({ title: "Obra Cargada", description: `${data.nombre_obra} ha sido cargada exitosamente.`});
     }
-    router.push('/dashboard/obras');
+    router.push('/dashboard/oficina-tecnica/obras'); // Updated route
   };
 
   return (
