@@ -123,3 +123,27 @@ export interface ReservaSala {
   createdBy?: Role;
   createdAt?: string; // ISO string
 }
+
+// Tipos para Oficina Técnica - Pedido de Precios a Compras
+export const PEDIDO_PRECIO_UNIDADES = ["m", "kg", "m2", "m3", "rollo", "lts", "un", "otro"] as const;
+export type PedidoPrecioUnidad = typeof PEDIDO_PRECIO_UNIDADES[number];
+
+export const PEDIDO_PRECIO_TIPOS = ["Servicio", "Alquiler", "Compra"] as const;
+export type PedidoPrecioTipo = typeof PEDIDO_PRECIO_TIPOS[number];
+
+export interface PedidoPrecioItem {
+  id: string;
+  descripcion: string;
+  unidad: PedidoPrecioUnidad;
+  unidadPersonalizada?: string; // Usado si unidad es "otro"
+  cantidad: number;
+  obraDestinoId: string; // ID de la Obra
+  tipo: PedidoPrecioTipo;
+  precioUnitarioARS?: number; // Editable por Compras
+  precioUnitarioUSD?: number; // Editable por Compras
+  presupuestoPdf?: string; // filename, editable por Compras
+  createdByOT: Role; // Siempre "Oficina Técnica" al crear
+  createdAt: string; // ISO string
+  lastUpdatedByCompras?: Role; // "Compras" si actualizó precios/pdf
+  lastUpdatedAt?: string; // ISO string de la última actualización por Compras
+}

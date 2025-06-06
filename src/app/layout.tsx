@@ -6,7 +6,8 @@ import { Toaster } from '@/components/ui/toaster';
 import { ObrasProvider } from '@/contexts/ObrasContext';
 import { PersonalProvider } from '@/contexts/PersonalContext';
 import { AsistenciaProvider } from '@/contexts/AsistenciaContext';
-import { ReservasSalaProvider } from '@/contexts/ReservasSalaContext'; // Nueva importación
+import { ReservasSalaProvider } from '@/contexts/ReservasSalaContext';
+import { PedidosPreciosProvider } from '@/contexts/PedidosPreciosContext'; // Nueva importación
 
 export const metadata: Metadata = {
   title: 'GRUPO NIOI',
@@ -30,9 +31,11 @@ export default function RootLayout({
           <ObrasProvider>
             <PersonalProvider>
               <AsistenciaProvider>
-                <ReservasSalaProvider> {/* Envolver con ReservasSalaProvider */}
-                  {children}
-                  <Toaster />
+                <ReservasSalaProvider>
+                  <PedidosPreciosProvider> {/* Envolver con PedidosPreciosProvider */}
+                    {children}
+                    <Toaster />
+                  </PedidosPreciosProvider>
                 </ReservasSalaProvider>
               </AsistenciaProvider>
             </PersonalProvider>

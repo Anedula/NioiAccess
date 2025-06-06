@@ -16,19 +16,16 @@ import {
   SidebarTrigger,
   SidebarProvider,
   SidebarInset,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton
-} from '@/components/ui/sidebar';
+} from '@/components/ui/sidebar'; // Removed Sub components as they are not used directly here now
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import { LogOut, LayoutDashboard, ListOrdered, UsersRound, Mountain, Megaphone, Settings, Building2, CalendarDays } from 'lucide-react';
+import { LogOut, LayoutDashboard, UsersRound, Mountain, Megaphone, Settings, Building2, CalendarDays } from 'lucide-react';
 
-// Define navigation items with potential sub-items
+// Define navigation items
 const navItems = [
   { href: '/dashboard', label: 'Menú Principal', icon: LayoutDashboard },
   {
-    href: '/dashboard/oficina-tecnica/obras', 
+    href: '/dashboard/oficina-tecnica', // Points to the main Oficina Tecnica page with tabs
     label: 'Oficina Técnica',
     icon: Building2,
   },
@@ -66,23 +63,6 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
                       <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
                     </SidebarMenuButton>
                   </Link>
-                  {/* SubItems logic removed for Oficina Técnica, kept for potential future use by other items */}
-                  {(item as any).subItems && item.label !== 'Oficina Técnica' && ( 
-                    <SidebarMenuSub className="group-data-[collapsible=icon]:hidden">
-                      {(item as any).subItems.map((subItem: any) => (
-                        <SidebarMenuSubItem key={subItem.href}>
-                          <Link href={subItem.href} passHref legacyBehavior>
-                            <SidebarMenuSubButton
-                              isActive={pathname === subItem.href || pathname.startsWith(subItem.href)}
-                            >
-                              {/* Icon for sub-items can be added here if needed, e.g., <subItem.icon className="mr-2 h-4 w-4" /> */}
-                              <span>{subItem.label}</span>
-                            </SidebarMenuSubButton>
-                          </Link>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  )}
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
