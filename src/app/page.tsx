@@ -14,7 +14,7 @@ export default function WelcomePage() {
             width={120} 
             height={120}
             className="mb-6 rounded-full"
-            data-ai-hint="engineer helmet"
+            data-ai-hint="company logo"
           />
           <CardTitle className="text-3xl font-headline text-primary">
             Bienvenido a Grupo Nioi

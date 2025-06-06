@@ -66,7 +66,7 @@ export default function LoginForm() {
             width={80} 
             height={80}
             className="mb-4 rounded-full"
-            data-ai-hint="engineer helmet"
+            data-ai-hint="company logo"
           />
           <CardTitle className="text-2xl font-headline text-primary">Iniciar Sesión</CardTitle>
           <CardDescription>Seleccione su rol e ingrese su contraseña.</CardDescription>
