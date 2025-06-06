@@ -32,35 +32,40 @@ interface FormularioEgresoCajaProps {
   onSubmitEgreso: (data: EgresoFormValues) => void;
   onCancel: () => void;
   isSubmitting: boolean;
-  defaultValues?: Partial<EgresoFormValues>; // For editing
+  defaultValues?: Partial<Omit<EgresoFormValues, 'fecha' | 'monto'> & { fecha?: Date | string, monto?: number | string | null }>;
 }
+
+// Helper to prepare form values, ensuring 'monto' is suitable for controlled input
+const prepareFormValues = (propDefaults?: FormularioEgresoCajaProps['defaultValues']): EgresoFormValues => {
+  const baseDefaults = {
+    fecha: new Date(),
+    tipoGasto: TIPOS_GASTO_CAJA_CHICA[0],
+    detalleGasto: '',
+    monto: '' as unknown as number, // Initialize monto as empty string for the form, Zod will coerce
+  };
+
+  if (propDefaults) {
+    return {
+      ...baseDefaults,
+      ...propDefaults,
+      fecha: propDefaults.fecha ? (typeof propDefaults.fecha === 'string' ? new Date(propDefaults.fecha) : propDefaults.fecha) : new Date(),
+      // Ensure monto is a string if it's empty/null/undefined, otherwise keep the number for editing
+      monto: (propDefaults.monto === undefined || propDefaults.monto === null || propDefaults.monto === '') ? ('' as unknown as number) : Number(propDefaults.monto),
+    };
+  }
+  return baseDefaults;
+};
+
 
 export default function FormularioEgresoCaja({ onSubmitEgreso, onCancel, isSubmitting, defaultValues }: FormularioEgresoCajaProps) {
   const form = useForm<EgresoFormValues>({
     resolver: zodResolver(egresoSchema),
-    defaultValues: defaultValues || {
-      fecha: new Date(),
-      tipoGasto: TIPOS_GASTO_CAJA_CHICA[0],
-      detalleGasto: '',
-      monto: undefined,
-    },
+    defaultValues: prepareFormValues(defaultValues),
   });
   
   React.useEffect(() => {
-    if (defaultValues) {
-        form.reset({
-            ...defaultValues,
-            fecha: defaultValues.fecha ? (typeof defaultValues.fecha === 'string' ? new Date(defaultValues.fecha) : defaultValues.fecha) : new Date(),
-        });
-    } else {
-        form.reset({
-            fecha: new Date(),
-            tipoGasto: TIPOS_GASTO_CAJA_CHICA[0],
-            detalleGasto: '',
-            monto: undefined,
-        });
-    }
-  }, [defaultValues, form.reset, form]);
+    form.reset(prepareFormValues(defaultValues));
+  }, [defaultValues, form.reset]);
 
 
   return (
@@ -114,7 +119,7 @@ export default function FormularioEgresoCaja({ onSubmitEgreso, onCancel, isSubmi
           render={({ field }) => (
             <FormItem>
               <FormLabel>Detalle del Gasto (Opcional)</FormLabel>
-              <FormControl><Textarea placeholder="Descripción breve del gasto..." {...field} /></FormControl>
+              <FormControl><Textarea placeholder="Descripción breve del gasto..." {...field} value={field.value ?? ''} /></FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -125,7 +130,15 @@ export default function FormularioEgresoCaja({ onSubmitEgreso, onCancel, isSubmi
           render={({ field }) => (
             <FormItem>
               <FormLabel>Monto del Egreso (ARS)</FormLabel>
-              <FormControl><Input type="number" placeholder="Ej: 300" {...field} /></FormControl>
+              <FormControl>
+                <Input
+                  type="number"
+                  placeholder="Ej: 300"
+                  {...field}
+                  value={field.value === undefined || field.value === null || field.value === '' ? '' : String(field.value)}
+                  onChange={(e) => field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value))}
+                />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
