@@ -29,12 +29,11 @@ export default function PedidosPreciosTab() {
   };
 
   const overallStatus = useMemo(() => {
-    if (isLoading || pedidosPrecios.length === 0) return "Pendiente"; // Default to pendiente if loading or no items
+    if (isLoading || pedidosPrecios.length === 0) return "Pendiente"; 
     
     const allPriced = pedidosPrecios.every(item => 
       item.precioUnitarioARS !== undefined && item.precioUnitarioARS > 0 &&
-      item.precioUnitarioUSD !== undefined && item.precioUnitarioUSD > 0 &&
-      item.presupuestoPdf && item.presupuestoPdf.trim() !== ''
+      item.precioUnitarioUSD !== undefined && item.precioUnitarioUSD > 0
     );
     return allPriced ? "Actualizada" : "Pendiente";
   }, [pedidosPrecios, isLoading]);
@@ -76,3 +75,4 @@ export default function PedidosPreciosTab() {
     </div>
   );
 }
+

@@ -24,8 +24,7 @@ export default function PedidosDesdeOTTab() {
     
     const allPriced = pedidosPrecios.every(item => 
       item.precioUnitarioARS !== undefined && item.precioUnitarioARS > 0 &&
-      item.precioUnitarioUSD !== undefined && item.precioUnitarioUSD > 0 &&
-      item.presupuestoPdf && item.presupuestoPdf.trim() !== ''
+      item.precioUnitarioUSD !== undefined && item.precioUnitarioUSD > 0
     );
     return allPriced ? "Actualizada" : "Pendiente";
   }, [pedidosPrecios, isLoading]);
@@ -57,3 +56,4 @@ export default function PedidosDesdeOTTab() {
     </div>
   );
 }
+
