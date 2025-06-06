@@ -147,3 +147,29 @@ export interface PedidoPrecioItem {
   lastUpdatedByCompras?: Role; // "Compras" si actualizó precios/pdf
   lastUpdatedAt?: string; // ISO string de la última actualización por Compras
 }
+
+// Tipos para Área de Compras - Caja Chica
+export const TIPOS_GASTO_CAJA_CHICA = ["Viáticos", "Combustible", "Insumos de Oficina", "Limpieza", "Mantenimiento", "Gastos Notariales", "Otro"] as const;
+export type TipoGastoCajaChica = typeof TIPOS_GASTO_CAJA_CHICA[number];
+
+export interface EgresoCajaChica {
+  id: string;
+  fecha: string; // ISO string (YYYY-MM-DD)
+  tipoGasto: TipoGastoCajaChica;
+  detalleGasto?: string;
+  monto: number; // ARS
+}
+
+export interface CajaChica {
+  id: string;
+  fechaApertura: string; // ISO string (YYYY-MM-DD)
+  montoInicial: number; // ARS
+  egresos: EgresoCajaChica[];
+  fechaCierre?: string; // ISO string (YYYY-MM-DD)
+  totalEgresos?: number; // ARS
+  saldoFinal?: number; // ARS
+  createdBy?: Role; // Role of the user who opened the caja
+  createdAt: string; // ISO string of opening time
+  closedBy?: Role; // Role of the user who closed the caja
+  closedAt?: string; // ISO string of closing time
+}
