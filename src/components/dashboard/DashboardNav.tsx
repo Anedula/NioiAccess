@@ -15,15 +15,34 @@ import {
   SidebarFooter,
   SidebarTrigger,
   SidebarProvider,
-  SidebarInset
-} from '@/components/ui/sidebar';
+  SidebarInset,
+} from '@/components/ui/sidebar'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import { LogOut, LayoutDashboard, ListOrdered, UsersRound, Mountain, Megaphone, Settings, Building2, CalendarDays } from 'lucide-react';
+import { LogOut, LayoutDashboard, UsersRound, Mountain, Megaphone, Settings, Building2, CalendarDays, ShoppingCart } from 'lucide-react';
+import type { Role } from '@/lib/types';
 
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/obras', label: 'Listado de Obras', icon: ListOrdered },
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  allowedRoles?: Role[]; // Optional: specify which roles can see this item
+}
+
+// Define navigation items
+const navItems: NavItem[] = [
+  { href: '/dashboard', label: 'Menú Principal', icon: LayoutDashboard },
+  {
+    href: '/dashboard/oficina-tecnica', 
+    label: 'Oficina Técnica',
+    icon: Building2,
+  },
+  { 
+    href: '/dashboard/compras', 
+    label: 'Área de Compras', 
+    icon: ShoppingCart,
+    // allowedRoles: ['Compras'] // Removed role restriction
+  },
   { href: '/dashboard/recursos-humanos', label: 'Recursos Humanos', icon: UsersRound },
   { href: '/dashboard/caliza', label: 'Caliza', icon: Mountain },
   { href: '/dashboard/eventos', label: 'Eventos', icon: Megaphone },
@@ -33,6 +52,12 @@ const navItems = [
 export default function DashboardNav({ children }: { children: React.ReactNode }) {
   const { userRole, logout } = useAuth();
   const pathname = usePathname();
+
+  const visibleNavItems = navItems.filter(item => {
+    if (!item.allowedRoles) return true; // If no roles specified, item is visible to all
+    if (!userRole) return false; // If user has no role, hide role-specific items
+    return item.allowedRoles.includes(userRole);
+  });
 
   return (
     <SidebarProvider defaultOpen>
@@ -46,8 +71,8 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
         <SidebarContent className="p-2">
           <ScrollArea className="h-full">
             <SidebarMenu>
-              {navItems.map((item) => (
-                <SidebarMenuItem key={item.href}>
+              {visibleNavItems.map((item) => (
+                <SidebarMenuItem key={item.href || item.label}>
                   <Link href={item.href} passHref legacyBehavior>
                     <SidebarMenuButton
                       isActive={pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))}
@@ -77,7 +102,6 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
       <SidebarInset className="flex flex-col">
         <header className="sticky top-0 z-10 flex items-center justify-between h-14 px-4 border-b bg-background sm:justify-end no-print">
           <SidebarTrigger className="sm:hidden" />
-          {/* Future header content like notifications or user profile can go here */}
           <div className="flex items-center gap-2">
              <span className="text-sm text-muted-foreground hidden sm:inline">Usuario: {userRole}</span>
           </div>

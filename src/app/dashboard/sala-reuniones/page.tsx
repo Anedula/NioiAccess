@@ -15,7 +15,7 @@ import * as z from 'zod';
 import { useReservasSala, WORKING_HOURS, SLOT_DURATION_MINUTES } from '@/contexts/ReservasSalaContext';
 import { useAuth } from '@/contexts/AuthContext';
 import type { ReservaSala, Role } from '@/lib/types';
-import { format, parse, addMinutes, startOfMonth, isSameDay, isBefore, isEqual, parseISO } from 'date-fns';
+import { format, parse, addMinutes, startOfMonth, isSameDay, isBefore, isEqual, parseISO, isAfter } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import {
