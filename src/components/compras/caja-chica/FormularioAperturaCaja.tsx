@@ -34,7 +34,7 @@ export default function FormularioAperturaCaja() {
     resolver: zodResolver(aperturaSchema),
     defaultValues: {
       fechaApertura: new Date(),
-      montoInicial: undefined,
+      montoInicial: '' as unknown as number, // Initialize with empty string
     },
   });
 
@@ -45,7 +45,7 @@ export default function FormularioAperturaCaja() {
       return;
     }
     abrirCaja(data.fechaApertura, data.montoInicial, userRole as Role);
-    form.reset({ fechaApertura: new Date(), montoInicial: undefined });
+    form.reset({ fechaApertura: new Date(), montoInicial: '' as unknown as number });
   };
 
   if (cajaChicaActiva) {
@@ -106,7 +106,13 @@ export default function FormularioAperturaCaja() {
                 <FormItem>
                   <FormLabel>Monto Inicial (ARS)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Ej: 5000" {...field} />
+                    <Input
+                      type="number"
+                      placeholder="Ej: 5000"
+                      {...field}
+                      value={field.value === undefined || field.value === null ? '' : field.value} // Ensure defined value
+                      onChange={(e) => field.onChange(e.target.value === '' ? '' : parseFloat(e.target.value))} // Handle empty string for coercion
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
