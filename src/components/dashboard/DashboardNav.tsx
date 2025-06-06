@@ -16,18 +16,32 @@ import {
   SidebarTrigger,
   SidebarProvider,
   SidebarInset,
-} from '@/components/ui/sidebar'; // Removed Sub components as they are not used directly here now
+} from '@/components/ui/sidebar'; 
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
-import { LogOut, LayoutDashboard, UsersRound, Mountain, Megaphone, Settings, Building2, CalendarDays } from 'lucide-react';
+import { LogOut, LayoutDashboard, UsersRound, Mountain, Megaphone, Settings, Building2, CalendarDays, ShoppingCart } from 'lucide-react';
+import type { Role } from '@/lib/types';
+
+interface NavItem {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  allowedRoles?: Role[]; // Optional: specify which roles can see this item
+}
 
 // Define navigation items
-const navItems = [
+const navItems: NavItem[] = [
   { href: '/dashboard', label: 'Menú Principal', icon: LayoutDashboard },
   {
-    href: '/dashboard/oficina-tecnica', // Points to the main Oficina Tecnica page with tabs
+    href: '/dashboard/oficina-tecnica', 
     label: 'Oficina Técnica',
     icon: Building2,
+  },
+  { 
+    href: '/dashboard/compras', 
+    label: 'Área de Compras', 
+    icon: ShoppingCart,
+    allowedRoles: ['Compras'] 
   },
   { href: '/dashboard/recursos-humanos', label: 'Recursos Humanos', icon: UsersRound },
   { href: '/dashboard/caliza', label: 'Caliza', icon: Mountain },
@@ -38,6 +52,12 @@ const navItems = [
 export default function DashboardNav({ children }: { children: React.ReactNode }) {
   const { userRole, logout } = useAuth();
   const pathname = usePathname();
+
+  const visibleNavItems = navItems.filter(item => {
+    if (!item.allowedRoles) return true; // If no roles specified, item is visible to all
+    if (!userRole) return false; // If user has no role, hide role-specific items
+    return item.allowedRoles.includes(userRole);
+  });
 
   return (
     <SidebarProvider defaultOpen>
@@ -51,7 +71,7 @@ export default function DashboardNav({ children }: { children: React.ReactNode }
         <SidebarContent className="p-2">
           <ScrollArea className="h-full">
             <SidebarMenu>
-              {navItems.map((item) => (
+              {visibleNavItems.map((item) => (
                 <SidebarMenuItem key={item.href || item.label}>
                   <Link href={item.href} passHref legacyBehavior>
                     <SidebarMenuButton
